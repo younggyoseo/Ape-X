@@ -1,0 +1,12 @@
+# default python
+*.pyc
+
+# pytorch save files
+*.pth
+
+# mac / ide settings
+.vscode
+.DS_Store
+
+# test and logging folders
+runs

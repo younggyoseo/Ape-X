@@ -1,0 +1,14 @@
+access_key = "Enter Your Access Key"
+secret_key = "Enter Your Secret Key"
+region = "ap-northeast-2"
+num_actor_node = 48
+actor_per_node = 4
+ssh_cidr = "0.0.0.0/0"
+ssh_key_file = "Your Key-Pair File Path"
+aws_key_name = "Your Key-Pair Name"
+availability_zone = "ap-northeast-2a"
+proj_owner = "belepi93"
+evaluator_ami = "ami-077b11fae3680e1dc"
+learner_ami = "ami-00f4bec93372230e3"
+replay_ami = "ami-0a762ffacbdb6d82a"
+actor_ami = "ami-077b11fae3680e1dc"

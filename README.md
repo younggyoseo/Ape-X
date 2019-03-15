@@ -70,3 +70,9 @@ My focus was to run Ape-X in a multi-node environment but you can run this model
 3. Run `terraform init` in `deploy` directory.
 4. Run `terraform apply` and terraform will magically create all necessary instances and training will start.
 5. To see how trained model works, See tensorboard which includes **actor with larget actor id which has smallest epsilon value**. You could easily access tensorboard by entering **http://public_ip:6006**. Or you could add a evaluator node with a new instance but this costs you more money :(
+
+
+### Thanks to
+
+1. https://github.com/haje01/distper
+2. https://github.com/openai/baselines/

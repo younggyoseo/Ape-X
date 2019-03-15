@@ -30,7 +30,9 @@ gym[atari]
 
 # Result
 
-I'm still running experiment with a few atari games. Plots will be added to this section when finished.
+![image](https://user-images.githubusercontent.com/20944657/54402762-97013b80-4710-11e9-95ba-aca306f5ab3f.png)
+
+Seaquest result trained with 192 actors. Due to the slow training speed(10~12 batches/s instead of 19 batches/s in paper), It was not possible to reproduce the same result as the paper. But it shows dramatic increase over my baseline implementations(rainbow, acer)
 
 # How To Use
 

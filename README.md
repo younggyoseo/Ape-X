@@ -36,6 +36,8 @@ gym[atari]
 
 Seaquest result trained with 192 actors. Due to the slow training speed(10~12 batches/s instead of 19 batches/s in paper), It was not possible to reproduce the same result as the paper. But it shows dramatic increase over my baseline implementations(rainbow, acer)
 
+I recently noticed that the performance(score) of actor is much better in evaluation setting(epsilon=0.) than the plot 1. I added gif to show how agent acts and scores in SeaquestNoFrameskip-v4.
+
 # How To Use
 
 ## Single Machine

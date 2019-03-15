@@ -28,6 +28,11 @@ gym[atari]
 2. CPU performance of `pytorch-nightly-cpu` from conda is much better than normal `torch`
 3. `tensorflow` is necessary to use tensorboardX.
 
+# Overall Structure
+
+![image](https://user-images.githubusercontent.com/20944657/54428494-069f1700-4761-11e9-96bc-51ba0b8c39e5.png)
+
+
 # Result
 
 ![image](https://user-images.githubusercontent.com/20944657/54402762-97013b80-4710-11e9-95ba-aca306f5ab3f.png)
@@ -36,7 +41,7 @@ gym[atari]
 
 Seaquest result trained with 192 actors. Due to the slow training speed(10~12 batches/s instead of 19 batches/s in paper), It was not possible to reproduce the same result as the paper. But it shows dramatic increase over my baseline implementations(rainbow, acer)
 
-I recently noticed that the performance(score) of actor is much better in evaluation setting(epsilon=0.) than the plot 1. I added gif to show how agent acts and scores in SeaquestNoFrameskip-v4.
+Added gif to show how agent really acts and scores in SeaquestNoFrameskip-v4. I recently noticed that the performance(score) of actor is much better in evaluation setting(epsilon=0.) than the plot 1. 
 
 # How To Use
 

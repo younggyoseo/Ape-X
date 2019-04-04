@@ -144,11 +144,9 @@ class WarpFrame(gym.ObservationWrapper):
         self.height = height
         self.grayscale = grayscale
         if self.grayscale:
-            self.observation_space = spaces.Box(low=0, high=255,
-                                                shape=(self.height, self.width, 1), dtype=np.uint8)
+            self.observation_space = spaces.Box(low=0, high=255, shape=(self.height, self.width, 1), dtype=np.uint8)
         else:
-            self.observation_space = spaces.Box(low=0, high=255,
-                                                shape=(self.height, self.width, 3), dtype=np.uint8)
+            self.observation_space = spaces.Box(low=0, high=255, shape=(self.height, self.width, 3), dtype=np.uint8)
 
     def observation(self, frame):
         if self.grayscale:
@@ -230,25 +228,6 @@ class LazyFrames(object):
         return self._force()[i]
 
 
-class TimeLimit(gym.Wrapper):
-    def __init__(self, env, max_episode_steps=None):
-        super(TimeLimit, self).__init__(env)
-        self._max_episode_steps = max_episode_steps
-        self._elapsed_steps = 0
-
-    def step(self, ac):
-        observation, reward, done, info = self.env.step(ac)
-        self._elapsed_steps += 1
-        if self._elapsed_steps >= self._max_episode_steps:
-            done = True
-            info['TimeLimit.truncated'] = True
-        return observation, reward, done, info
-
-    def reset(self, **kwargs):
-        self._elapsed_steps = 0
-        return self.env.reset(**kwargs)
-
-
 def make_atari(env_id, max_episode_steps=None):
     env = gym.make(env_id)
     assert 'NoFrameskip' in env.spec.id
@@ -276,6 +255,25 @@ def wrap_deepmind(env, episode_life=True, clip_rewards=True, frame_stack=False, 
     return env
 
 
+class TimeLimit(gym.Wrapper):
+    def __init__(self, env, max_episode_steps=None):
+        super(TimeLimit, self).__init__(env)
+        self._max_episode_steps = max_episode_steps
+        self._elapsed_steps = 0
+
+    def step(self, ac):
+        observation, reward, done, info = self.env.step(ac)
+        self._elapsed_steps += 1
+        if self._elapsed_steps >= self._max_episode_steps:
+            done = True
+            info['TimeLimit.truncated'] = True
+        return observation, reward, done, info
+
+    def reset(self, **kwargs):
+        self._elapsed_steps = 0
+        return self.env.reset(**kwargs)
+
+
 class ImageToPyTorch(gym.ObservationWrapper):
     """
     Image shape to num_channels x weight x height
@@ -290,25 +288,11 @@ class ImageToPyTorch(gym.ObservationWrapper):
         return np.swapaxes(observation, 2, 0)
 
 
-def wrap_pytorch(env, episode_life=True, clip_rewards=True, frame_stack=False, scale=False):
-    if episode_life:
-        env = EpisodicLifeEnv(env)
-    if 'FIRE' in env.unwrapped.get_action_meanings():
-        env = FireResetEnv(env)
-    env = WarpFrame(env)
-    if scale:
-        env = ScaledFloatFrame(env)
-    if clip_rewards:
-        env = ClipRewardEnv(env)
-    env = ImageToPyTorch(env)
-    if frame_stack:
-        env = FrameStack(env, 4)
-    return env
-
-
 def wrap_atari_dqn(env, args):
-    return wrap_pytorch(env,
+    env = wrap_deepmind(env,
                         episode_life=args.episode_life,
                         clip_rewards=args.clip_rewards,
                         frame_stack=args.frame_stack,
                         scale=args.scale)
+    env = ImageToPyTorch(env)
+    return env

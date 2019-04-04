@@ -73,6 +73,9 @@ def argparser():
     parser.add_argument('--n_recv_batch_process', type=int, default=4,
                         help='Number of processes to receive batch from replay')
 
+    # Arguments for Enjoy
+    parser.add_argument('--render', action='store_true', default=False)
+
     args = parser.parse_args()
     args.cuda = args.cuda and torch.cuda.is_available()
     args.device = torch.device("cuda" if args.cuda else "cpu")

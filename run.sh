@@ -9,3 +9,4 @@ tmux new -s actor4 -d 'source activate RL; REPLAY_IP="127.0.0.1" LEARNER_IP="127
 tmux new -s actor5 -d 'source activate RL; REPLAY_IP="127.0.0.1" LEARNER_IP="127.0.0.1" ACTOR_ID=5 N_ACTORS=8 python actor.py; read'
 tmux new -s actor6 -d 'source activate RL; REPLAY_IP="127.0.0.1" LEARNER_IP="127.0.0.1" ACTOR_ID=6 N_ACTORS=8 python actor.py; read'
 tmux new -s actor7 -d 'source activate RL; REPLAY_IP="127.0.0.1" LEARNER_IP="127.0.0.1" ACTOR_ID=7 N_ACTORS=8 python actor.py; read'
+tmux new -s evaluator -d 'source activate RL; LEARNER_IP="127.0.0.1" python eval.py; read'

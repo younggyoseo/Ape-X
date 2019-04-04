@@ -56,3 +56,7 @@ variable "replay_ami" {
 variable "actor_ami" {
     default = "ami-077b11fae3680e1dc"
 }
+
+variable "evaluator_ami" {
+    default = "ami-077b11fae3680e1dc"
+}

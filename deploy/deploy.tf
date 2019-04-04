@@ -265,7 +265,7 @@ resource "aws_instance" "learner" {
 }
 
 
-# learner node
+# actor node
 resource "aws_instance" "actor" {
     ami = "${var.actor_ami}"
     instance_type = "m5.xlarge"
@@ -306,6 +306,46 @@ resource "aws_instance" "actor" {
 
     tags {
         Name = "ape-x-actor${count.index}"
+        Owner = "${var.proj_owner}"
+    }
+}
+
+# eval node
+resource "aws_instance" "evaluator" {
+    ami = "${var.evaluator_ami}"
+    instance_type = "m5.xlarge"
+    key_name = "${var.aws_key_name}"
+    vpc_security_group_ids = ["${aws_security_group.evaluator.id}"]
+    subnet_id = "${aws_default_subnet.default.id}"
+    depends_on = ["aws_instance.learner"]
+
+    provisioner "file" {
+        connection {
+            type = "ssh"
+            user = "ubuntu"
+            private_key = "${file("${var.ssh_key_file}")}"
+            agent = false
+        }
+        source = "evaluator.sh"
+        destination = "/tmp/evaluator.sh"
+    }
+
+    provisioner "remote-exec" {
+        connection {
+            type = "ssh"
+            user = "ubuntu"
+            private_key = "${file("${var.ssh_key_file}")}"
+            agent = false
+        }
+        inline = [
+            "export LEARNER_IP=${aws_instance.learner.private_ip}",
+            "chmod +x /tmp/evaluator.sh",
+            "bash /tmp/evaluator.sh",
+        ]
+    }
+
+    tags {
+        Name = "ape-x-evaluator"
         Owner = "${var.proj_owner}"
     }
 }

@@ -430,7 +430,7 @@ class BatchStorage:
         next_q_a_values = next_q_values.max(1)
         expected_q_a_values = rewards + (self.gamma ** self.n_steps) * next_q_a_values * (1 - dones)
         td_error = expected_q_a_values - q_a_values
-        prios = np.abs(td_error) + 1e-5
+        prios = np.abs(td_error) + 1e-6
         return prios
 
     def make_batch(self):

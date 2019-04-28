@@ -57,7 +57,7 @@ def compute_loss(model, tgt_model, batch, n_steps, gamma=0.99):
     prios = (td_error + 1e-6).data.cpu().numpy()
 
     loss = torch.where(td_error < 1, 0.5 * td_error ** 2, td_error - 0.5)
-    loss = (loss * weights).sum()
+    loss = (loss * weights).mean()
     return loss, prios
 
 

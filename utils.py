@@ -57,7 +57,7 @@ def compute_loss(model, tgt_model, batch, n_steps, gamma=0.99):
     prios = (td_error + 1e-6).data.cpu().numpy()
 
     loss = torch.where(td_error < 1, 0.5 * td_error ** 2, td_error - 0.5)
-    loss = (loss * weights).mean()
+    loss = (loss * weights).sum()
     return loss, prios
 
 
@@ -67,11 +67,11 @@ def update_parameters(loss, model, optimizer, max_norm):
     """
     optimizer.zero_grad()
     loss.backward()
-    torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), max_norm)
     total_norm = 0.
     for p in model.parameters():
         param_norm = p.grad.data.norm(2)
         total_norm += param_norm ** (1. / 2)
     total_norm = total_norm ** (1. / 2)
+    torch.nn.utils.clip_grad.clip_grad_norm_(model.parameters(), max_norm)
     optimizer.step()
     return total_norm

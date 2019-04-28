@@ -188,6 +188,22 @@ class FrameStack(gym.Wrapper):
         return LazyFrames(list(self.frames))
 
 
+class TorchFrameStack(FrameStack):
+    def __init__(self, env, k):
+        """
+        Stack k first frames instead of last frames.
+        See FrameStack
+        """
+        super(TorchFrameStack, self).__init__(env, k)
+        shp = env.observation_space.shape
+        self.observation_space = spaces.Box(low=0, high=255, shape=((shp[0] * k,) + shp[1:]),
+                                            dtype=env.observation_space.dtype)
+
+    def _get_ob(self):
+        assert len(self.frames) == self.k
+        return TorchLazyFrames(list(self.frames))
+
+
 class ScaledFloatFrame(gym.ObservationWrapper):
     def __init__(self, env):
         gym.ObservationWrapper.__init__(self, env)
@@ -226,6 +242,14 @@ class LazyFrames(object):
 
     def __getitem__(self, i):
         return self._force()[i]
+
+
+class TorchLazyFrames(LazyFrames):
+    def _force(self):
+        if self._out is None:
+            self._out = np.concatenate(self._frames, axis=0)
+            self._frames = None
+        return self._out
 
 
 def make_atari(env_id, max_episode_steps=None):
@@ -281,7 +305,8 @@ class ImageToPyTorch(gym.ObservationWrapper):
     def __init__(self, env):
         super(ImageToPyTorch, self).__init__(env)
         old_shape = self.observation_space.shape
-        self.observation_space = gym.spaces.Box(low=0.0, high=1.0, shape=(old_shape[-1], old_shape[0], old_shape[1]),
+        self.observation_space = gym.spaces.Box(low=0, high=255,
+                                                shape=(old_shape[-1], old_shape[0], old_shape[1]),
                                                 dtype=np.uint8)
 
     def observation(self, observation):
@@ -289,10 +314,16 @@ class ImageToPyTorch(gym.ObservationWrapper):
 
 
 def wrap_atari_dqn(env, args):
-    env = wrap_deepmind(env,
-                        episode_life=args.episode_life,
-                        clip_rewards=args.clip_rewards,
-                        frame_stack=args.frame_stack,
-                        scale=args.scale)
+    if args.episode_life:
+        env = EpisodicLifeEnv(env)
+    if 'FIRE' in env.unwrapped.get_action_meanings():
+        env = FireResetEnv(env)
+    env = WarpFrame(env)
+    if args.scale:
+        env = ScaledFloatFrame(env)
+    if args.clip_rewards:
+        env = ClipRewardEnv(env)
     env = ImageToPyTorch(env)
+    if args.frame_stack:
+        env = TorchFrameStack(env, 4)
     return env

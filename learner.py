@@ -45,7 +45,8 @@ def check_connection(n_actors):
             print("Received handshake signal from actor {}".format(actor_id))
         else:
             finished.add(actor_id)
-        if len(connected) == n_actors and (len(connected) == len(finished)):
+        if len(connected) == (n_actors + 1) and (len(connected) == len(finished)):
+            # '+1' is needed to wait for evaluator to be connected
             break
     socket.close()
     ctx.term()

@@ -1,7 +1,9 @@
+"""
+Module for evaluator in Ape-X.
+"""
 import _pickle as pickle
 import os
 from multiprocessing import Process, Queue
-import queue
 
 import zmq
 import torch
@@ -62,16 +64,15 @@ def exploration(args, actor_id, param_queue):
     param = None
     print("Received First Parameter!")
 
-    episode_reward, episode_length, episode_idx, actor_idx = 0, 0, 0, 0
+    episode_reward, episode_length, episode_idx = 0, 0, 0
     state = env.reset()
     while True:
-        action, q_values = model.act(torch.FloatTensor(np.array(state)), 0.)
+        action, _ = model.act(torch.FloatTensor(np.array(state)), 0.)
         next_state, reward, done, _ = env.step(action)
 
         state = next_state
         episode_reward += reward
         episode_length += 1
-        actor_idx += 1
 
         if done or episode_length == args.max_episode_length:
             state = env.reset()
@@ -80,14 +81,9 @@ def exploration(args, actor_id, param_queue):
             episode_reward = 0
             episode_length = 0
             episode_idx += 1
-
-        if actor_idx % args.update_interval == 0:
-            try:
-                param = param_queue.get(block=False)
-                model.load_state_dict(param)
-                print("Updated Parameter..")
-            except queue.Empty:
-                pass
+            param = param_queue.get()
+            model.load_state_dict(param)
+            print("Updated Parameter..")
 
 
 def main():
